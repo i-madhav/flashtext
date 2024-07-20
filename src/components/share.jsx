@@ -1,6 +1,6 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef , useState } from 'react';
 import { EditorState } from '@codemirror/state';
-import { EditorView } from '@codemirror/view';
+import { EditorView , ViewUpdate } from '@codemirror/view';
 import { basicSetup } from '@codemirror/basic-setup';
 import { javascript } from '@codemirror/lang-javascript';
 
@@ -52,16 +52,22 @@ const vsCodeTheme = EditorView.theme({
 
 const Share = () => {
   const editorRef = useRef();
-
+  const [editorContent, setEditorContent] = useState('// Write your code here');
+  console.log(editorContent);
   useEffect(() => {
     if (!editorRef.current) return;
 
     const startState = EditorState.create({
-      doc: '// Write your code here',
+      doc: editorContent,
       extensions: [
         basicSetup,
         javascript(),
-        vsCodeTheme
+        vsCodeTheme,
+        EditorView.updateListener.of((v) => {
+          if (v.docChanged) {
+            setEditorContent(v.state.doc.toString());
+          }
+        })
       ]
     });
 
@@ -74,6 +80,11 @@ const Share = () => {
       view.destroy();
     };
   }, []);
+
+  const handleGetContent = () => {
+    console.log("Editor content:", editorContent);
+    // You can use editorContent here as needed
+  };
 
   return (
     <div>
