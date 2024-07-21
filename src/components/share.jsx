@@ -1,6 +1,6 @@
-import React, { useEffect, useRef , useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { EditorState } from '@codemirror/state';
-import { EditorView , ViewUpdate } from '@codemirror/view';
+import { EditorView, ViewUpdate } from '@codemirror/view';
 import { basicSetup } from '@codemirror/basic-setup';
 import { javascript } from '@codemirror/lang-javascript';
 
@@ -8,8 +8,8 @@ const vsCodeTheme = EditorView.theme({
   '&': {
     backgroundColor: '#1E1E1E !important',
     height: '100%',
-    fontSize:'20px',
-    color:'white'
+    fontSize: '20px',
+    color: 'white'
   },
   '.cm-content': {
     caretColor: '#A9B7C6',
@@ -53,7 +53,69 @@ const vsCodeTheme = EditorView.theme({
 const Share = () => {
   const editorRef = useRef();
   const [editorContent, setEditorContent] = useState('// Write your code here');
-  console.log(editorContent);
+  const [documentId, setDocumentId] = useState("");
+
+  useEffect(() => {
+    let path = window.location.pathname.slice(1);
+    setDocumentId(path);
+    if (!path)
+      handleDocumentCreation()
+  }, [])
+
+  useEffect(() => {
+    let path = window.location.pathname.slice(1);
+    handleDocumentUpdation(path);
+  },[editorContent]);
+
+  async function handleDocumentCreation() {
+    try {
+      const response = await fetch('http://localhost:8000/', {
+        method: 'POST',
+        headers: {
+          'Content-type': 'application/json'
+        },
+        body: JSON.stringify({
+          id: documentId,
+          content: editorContent
+        })
+      });
+
+      const data = await response.json();
+      console.log(data);
+      console.log(data.data._id);
+      if (data && data.data._id) {
+        const id = data.data._id;
+        setDocumentId(id);
+        window.history.pushState({}, '', `/${documentId}`);
+      }
+
+    } catch (error) {
+      console.log("Error creating/updating document:", error);
+    }
+  }
+
+  async function handleDocumentUpdation(id) {
+    try {
+      const response = await fetch(`http://localhost:8000/`, {
+        method: 'POST',
+        headers: {
+          'Content-type': 'application/json'
+        },
+        body: JSON.stringify({
+          id: documentId,
+          content: editorContent
+        })
+      });
+
+      const data = await response.json();
+      console.log(data);
+      setEditorContent(data.data.data);
+    } catch (error) {
+      console.log('Unable to update the document' + error);
+    }
+
+  }
+
   useEffect(() => {
     if (!editorRef.current) return;
 
@@ -80,11 +142,6 @@ const Share = () => {
       view.destroy();
     };
   }, []);
-
-  const handleGetContent = () => {
-    console.log("Editor content:", editorContent);
-    // You can use editorContent here as needed
-  };
 
   return (
     <div>
