@@ -58,24 +58,27 @@ const Share = () => {
   useEffect(() => {
     let path = window.location.pathname.slice(1);
     setDocumentId(path);
-    if (!path)
-      handleDocumentCreation()
+    if (path) {
+      handleDocumentUpdation(path)
+    } else {
+      handleDocumentCreation();
+    }
   }, [])
 
   useEffect(() => {
-    let path = window.location.pathname.slice(1);
-    handleDocumentUpdation(path);
-  },[editorContent]);
+    handleDocumentUpdation(documentId);
+  }, [editorContent]);
+
 
   async function handleDocumentCreation() {
     try {
-      const response = await fetch('http://localhost:8000/', {
+      const response = await fetch('https://notepadbackend-y9k7.onrender.com/', {
         method: 'POST',
         headers: {
           'Content-type': 'application/json'
         },
         body: JSON.stringify({
-          id: documentId,
+          id: "",
           content: editorContent
         })
       });
@@ -86,7 +89,7 @@ const Share = () => {
       if (data && data.data._id) {
         const id = data.data._id;
         setDocumentId(id);
-        window.history.pushState({}, '', `/${documentId}`);
+        window.history.pushState({}, '', `/${id}`);
       }
 
     } catch (error) {
@@ -96,13 +99,13 @@ const Share = () => {
 
   async function handleDocumentUpdation(id) {
     try {
-      const response = await fetch(`http://localhost:8000/`, {
+      const response = await fetch(`https://notepadbackend-y9k7.onrender.com/`, {
         method: 'POST',
         headers: {
           'Content-type': 'application/json'
         },
         body: JSON.stringify({
-          id: documentId,
+          id: id,
           content: editorContent
         })
       });
