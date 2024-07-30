@@ -58,13 +58,14 @@ const Share = () => {
   useEffect(() => {
     let path = window.location.pathname.slice(1);
     setDocumentId(path);
-    if (path) {
-      handleDocumentUpdation(path)
-    } else {
-      handleDocumentCreation();
-    }
+    handleDocumentCreation();
   }, [])
 
+  useEffect(() => {
+    if (editorContent) {
+      handleDocumentCreation(documentId)
+    }
+  }, [editorContent]);
 
   async function handleDocumentCreation() {
     try {
