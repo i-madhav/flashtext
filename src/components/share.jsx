@@ -65,10 +65,6 @@ const Share = () => {
     }
   }, [])
 
-  useEffect(() => {
-    handleDocumentUpdation(documentId);
-  }, [editorContent]);
-
 
   async function handleDocumentCreation() {
     try {
