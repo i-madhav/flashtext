@@ -97,6 +97,7 @@ const Share = () => {
 
   async function handleDocumentUpdation(id) {
     try {
+      console.log("handleDocumentUpdation First phase called");
       const response = await fetch(`https://notepadbackend-y9k7.onrender.com/`, {
         method: 'POST',
         headers: {
@@ -110,6 +111,8 @@ const Share = () => {
 
       const data = await response.json();
       console.log(data);
+      console.log("handleDocumentUpdation second phase called");
+      console.log(data.data.data);
       setEditorContent(data.data.data);
     } catch (error) {
       console.log('Unable to update the document' + error);
