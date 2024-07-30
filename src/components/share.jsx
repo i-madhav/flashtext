@@ -66,7 +66,7 @@ const Share = () => {
     if (editorContent) {
       handleDocumentUpdation(documentId)
     }
-  }, [editorContent]);
+  }, [editorRef]);
 
   async function handleDocumentCreation() {
     try {
