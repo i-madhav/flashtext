@@ -53,6 +53,7 @@ const vsCodeTheme = EditorView.theme({
 const Share = () => {
   const editorRef = useRef();
   const [editorContent, setEditorContent] = useState('// Write your code here');
+  console.log(editorContent);
   const [documentId, setDocumentId] = useState("");
 
   useEffect(() => {
@@ -63,7 +64,7 @@ const Share = () => {
 
   useEffect(() => {
     if (editorContent) {
-      handleDocumentCreation(documentId)
+      handleDocumentUpdation(documentId)
     }
   }, [editorContent]);
 
