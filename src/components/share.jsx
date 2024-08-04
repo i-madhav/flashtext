@@ -66,7 +66,7 @@ const Share = () => {
     if (editorContent) {
       handleDocumentUpdation(documentId)
     }
-  }, [editorRef]);
+  }, [editorContent]);
 
   async function handleDocumentCreation() {
     try {
@@ -113,6 +113,7 @@ const Share = () => {
       console.log(data);
       console.log("handleDocumentUpdation second phase called");
       console.log(data.data.data);
+      if(editorContent === data.data.data) return;
       setEditorContent(data.data.data);
     } catch (error) {
       console.log('Unable to update the document' + error);
