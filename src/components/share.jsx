@@ -58,8 +58,8 @@ const Share = () => {
 
   useEffect(() => {
     let path = window.location.pathname.slice(1);
+    if(path.length > 1) return;
     setDocumentId(path);
-    if(documentId.length > 0) return;
     handleDocumentCreation();
   }, [])
 
