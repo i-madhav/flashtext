@@ -114,9 +114,10 @@ const Share = () => {
           body: JSON.stringify({
             id: id,
             content: editorContent,
-          }),
-        }
-      );
+          }),});
+
+         const data = await response.json();
+         if(data.data.text === editorContent) return; 
     } catch (error) {
       console.log("Unable to update the document" + error);
     }
@@ -138,6 +139,7 @@ const Share = () => {
       );
       const data = await response.json();
       console.log(data.data.text);
+      setEditorContent(data.data.text);
     } catch (error) {
       console.log("unable to fetch data from the backend - " + error);
     }
