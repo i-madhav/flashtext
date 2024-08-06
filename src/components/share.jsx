@@ -53,13 +53,12 @@ const vsCodeTheme = EditorView.theme({
 const Share = () => {
   const editorRef = useRef();
   const [editorContent, setEditorContent] = useState('// Write your code here');
-  console.log(editorContent);
   const [documentId, setDocumentId] = useState("");
 
   useEffect(() => {
     let path = window.location.pathname.slice(1);
     if(path.length > 1) {
-      handleDocumentUpdation(documentId);
+      handleFetchData(path);
     }
     setDocumentId(path);
     handleDocumentCreation();
@@ -73,7 +72,7 @@ const Share = () => {
 
   async function handleDocumentCreation() {
     try {
-      const response = await fetch('https://notepadbackend-y9k7.onrender.com/', {
+      const response = await fetch('https://notepadbackend-y9k7.onrender.com/save', {
         method: 'POST',
         headers: {
           'Content-type': 'application/json'
@@ -101,7 +100,7 @@ const Share = () => {
   async function handleDocumentUpdation(id) {
     try {
       console.log("handleDocumentUpdation First phase called");
-      const response = await fetch(`https://notepadbackend-y9k7.onrender.com/`, {
+      const response = await fetch(`https://notepadbackend-y9k7.onrender.com/save`, {
         method: 'POST',
         headers: {
           'Content-type': 'application/json'
@@ -112,16 +111,16 @@ const Share = () => {
         })
       });
 
-      const data = await response.json();
-      console.log(data);
-      console.log("handleDocumentUpdation second phase called");
-      console.log(data.data.data);
-      if(editorContent === data.data.data) return;
-      setEditorContent(data.data.data);
+      
     } catch (error) {
       console.log('Unable to update the document' + error);
     }
+  }
 
+  async function handleFetchData(docid) {
+    const response = await fetch('https://notepadbackend-y9k7.onrender.com/fetch');
+    const data = await response.json();
+    console.log(data);
   }
 
   useEffect(() => {
