@@ -64,8 +64,8 @@ const Share = () => {
       handleFetchData(path);
       setDocumentId(path);
     }else{
-      setDocumentId(path);
       handleDocumentCreation();
+      setDocumentId(path);
     }
   }, []);
 
@@ -96,6 +96,8 @@ const Share = () => {
       const data = await response.json();
       if (data && data.data._id) {
         const id = data.data._id;
+        console.log(id);
+        
         window.history.pushState({}, "", `/${id}`);
       }
     } catch (error) {
