@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { EditorState } from "@codemirror/state";
-import { EditorView, ViewUpdate } from "@codemirror/view";
+import { EditorView} from "@codemirror/view";
 import { basicSetup } from "@codemirror/basic-setup";
 import { javascript } from "@codemirror/lang-javascript";
 
@@ -55,22 +55,25 @@ const vsCodeTheme = EditorView.theme(
 
 const Share = () => {
   const editorRef = useRef();
-  const [editorContent, setEditorContent] = useState("");
   const [documentId, setDocumentId] = useState("");
-
+  const [editorContent, setEditorContent] = useState(localStorage.getItem(`${window.location.pathname.slice(1)}`));
+  
   useEffect(() => {
     let path = window.location.pathname.slice(1);
     if (path.length > 1) {
       handleFetchData(path);
-      return;
+      setDocumentId(path);
+    }else{
+      setDocumentId(path);
+      handleDocumentCreation();
     }
-    setDocumentId(path);
-    handleDocumentCreation();
   }, []);
 
   useEffect(() => {
     if (editorContent) {
-      handleDocumentUpdation(documentId);
+      localStorage.setItem(`${documentId}`, editorContent);
+      let updatedData = localStorage.getItem(`${documentId}`);
+      handleDocumentUpdation(documentId , updatedData);
     }
   }, [editorContent]);
 
@@ -93,7 +96,6 @@ const Share = () => {
       const data = await response.json();
       if (data && data.data._id) {
         const id = data.data._id;
-        setDocumentId(id);
         window.history.pushState({}, "", `/${id}`);
       }
     } catch (error) {
@@ -101,9 +103,9 @@ const Share = () => {
     }
   }
 
-  async function handleDocumentUpdation(id) {
+  async function handleDocumentUpdation(id , updatedData){    
     try {
-      console.log("handleDocumentUpdation First phase called");
+      console.log("this is the content being saved in the database" + `${editorContent} and id - ${id}`);
       const response = await fetch(
         `https://notepadbackend-y9k7.onrender.com/save`,
         {
@@ -113,7 +115,7 @@ const Share = () => {
           },
           body: JSON.stringify({
             id: id,
-            content: editorContent,
+            content: updatedData,
           }),});
 
          const data = await response.json();
@@ -126,20 +128,10 @@ const Share = () => {
   async function handleFetchData(docid) {
     try {
       const response = await fetch(
-        "https://notepadbackend-y9k7.onrender.com/fetch",
-        {
-          method: "POST",
-          headers: {
-            "Content-type": "application/json",
-          },
-          body: JSON.stringify({
-            id: docid,
-          }),
-        }
-      );
+        `https://notepadbackend-y9k7.onrender.com/fetch/${docid}`);
       const data = await response.json();
-      console.log(data.data.text);
-      setEditorContent(data.data.text);
+      let stuff = data.data.text;
+      localStorage.setItem(`${docid}` , stuff);
     } catch (error) {
       console.log("unable to fetch data from the backend - " + error);
     }
@@ -147,7 +139,8 @@ const Share = () => {
 
   useEffect(() => {
     if (!editorRef.current) return;
-
+    console.log("I ran inside editorREd=f");
+    
     const startState = EditorState.create({
       doc: editorContent,
       extensions: [
